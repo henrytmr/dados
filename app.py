@@ -43,13 +43,10 @@ def cumple_regla(modo: str, valores: list[int]) -> bool:
     c = Counter(valores)
 
     if modo == "ganar":
-        # 1-1-1
         if valores == [1, 1, 1]:
             return True
-        # 4-5-6
         if sorted(valores) == [4, 5, 6]:
             return True
-        # par de 1, 2 o 3 + suelto 4, 5 o 6
         for v, n in c.items():
             if n >= 2 and v in (1, 2, 3):
                 resto = list(valores)
@@ -60,7 +57,6 @@ def cumple_regla(modo: str, valores: list[int]) -> bool:
         return False
 
     if modo == "perder":
-        # exactamente un 1 y un par que no sea de 1
         if c[1] != 1:
             return False
         resto = [v for v in valores if v != 1]
@@ -70,16 +66,7 @@ def cumple_regla(modo: str, valores: list[int]) -> bool:
 
 
 def generar_valores(modo: str) -> list[int]:
-    """
-    Genera valores según el modo.
-    
-    ⚡ MODO RANDOM: puro, criptográficamente seguro, sin patrón.
-       Cada dado es independiente y usa secrets.randbelow (CSPRNG).
-       Nunca se repiten semillas, nunca hay sesgo, nunca hay correlación
-       entre tiradas consecutivas.
-    """
     if modo == "random":
-        # ⚡ RANDOM 100% PURO — 3 valores independientes sin restricción
         return [secrets.randbelow(6) + 1 for _ in range(N_DADOS)]
 
     if modo == "ganar":
@@ -101,7 +88,6 @@ def generar_valores(modo: str) -> list[int]:
         _rng.shuffle(valores)
         return valores
 
-    # Fallback por si llega algo inesperado
     return [secrets.randbelow(6) + 1 for _ in range(N_DADOS)]
 
 
@@ -300,6 +286,10 @@ def _ok_tirada(t: dict) -> dict:
     return {"ok": True, "valores": t["valores"], "modo": t["modo"], "id_tirada": t["id"]}
 
 
+# ⚡ EXPOSICIÓN PARA GUNICORN (Render / Railway / Fly.io)
+app = create_app()
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    create_app().run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
