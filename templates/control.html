@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Control · Siló</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; min-height: 100vh;
+  background: radial-gradient(circle at 50% 30%, #1a1410 0%, #050403 100%);
+  color: #e8d9a8;
+  font-family: 'Georgia', serif;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+h1 {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  letter-spacing: 10px;
+  text-transform: uppercase;
+  color: #ffd966;
+  text-shadow: 0 0 25px rgba(255, 200, 100, 0.5), 0 2px 6px #000;
+  font-weight: 700;
+  text-align: center;
+}
+.sub {
+  font-size: 0.85rem;
+  letter-spacing: 6px;
+  color: rgba(232, 217, 168, 0.55);
+  margin-top: -18px;
+  text-transform: uppercase;
+}
+.botones {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn-srv {
+  width: 220px;
+  height: 120px;
+  border: none;
+  border-radius: 22px;
+  font-family: 'Georgia', serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.25s ease;
+}
+.btn-srv .subtext {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  font-weight: 400;
+  opacity: 0.78;
+  margin-top: 8px;
+}
+.btn-ganar {
+  background: linear-gradient(160deg, #2a7a3a 0%, #17602a 50%, #0b3d18 100%);
+  box-shadow: 0 10px 0 #062a10, 0 15px 40px rgba(20, 180, 60, 0.5),
+              inset 0 2px 0 rgba(180, 255, 180, 0.4);
+  text-shadow: 0 0 15px rgba(120, 255, 140, 0.8), 0 2px 4px #000;
+}
+.btn-perder {
+  background: linear-gradient(160deg, #7a2a2a 0%, #601717 50%, #3d0b0b 100%);
+  box-shadow: 0 10px 0 #2a0606, 0 15px 40px rgba(220, 60, 60, 0.5),
+              inset 0 2px 0 rgba(255, 180, 180, 0.4);
+  text-shadow: 0 0 15px rgba(255, 120, 120, 0.8), 0 2px 4px #000;
+}
+.btn-random {
+  background: linear-gradient(160deg, #4a4a7a 0%, #2f2f60 50%, #1a1a3d 100%);
+  box-shadow: 0 10px 0 #101030, 0 15px 40px rgba(100, 100, 220, 0.5),
+              inset 0 2px 0 rgba(180, 180, 255, 0.4);
+  text-shadow: 0 0 15px rgba(160, 160, 255, 0.8), 0 2px 4px #000;
+}
+.btn-srv:hover { filter: brightness(1.15); }
+.btn-srv:active { transform: translateY(6px) scale(0.97); }
+.btn-srv.pulsado { animation: pulsado 0.4s ease; }
+@keyframes pulsado {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(2px) scale(0.97); }
+  100% { transform: translateY(0) scale(1); }
+}
+.panel {
+  background: rgba(20, 15, 8, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(212, 175, 90, 0.4);
+  border-radius: 20px;
+  padding: 26px 34px;
+  min-width: 420px;
+  max-width: 90vw;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.7), inset 0 0 40px rgba(0,0,0,0.4);
+}
+.panel h2 {
+  font-size: 0.85rem;
+  letter-spacing: 6px;
+  color: rgba(232, 217, 168, 0.6);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgba(212, 175, 90, 0.25);
+  padding-bottom: 12px;
+}
+.fila {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+.fila .label { color: rgba(232, 217, 168, 0.7); }
+.fila .valor {
+  color: #ffd966;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  font-size: 1.15rem;
+}
+.fila .valor.verde { color: #7dff8c; text-shadow: 0 0 12px rgba(120, 255, 140, 0.6); }
+.fila .valor.rojo  { color: #ff8070; text-shadow: 0 0 12px rgba(255, 100, 80, 0.6); }
+.fila .valor.gris  { color: #b8a878; }
+
+.guion {
+  margin-top: 18px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(60, 40, 20, 0.35);
+  border: 1px solid rgba(120, 90, 40, 0.5);
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: rgba(232, 217, 168, 0.85);
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.link-juego {
+  color: #ffd966;
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: 1.5px solid rgba(212, 175, 90, 0.5);
+  border-radius: 40px;
+  transition: all 0.25s ease;
+}
+.link-juego:hover {
+  background: rgba(212, 175, 90, 0.15);
+  box-shadow: 0 0 25px rgba(255, 200, 100, 0.4);
+}
+</style>
+</head>
+<body>
+
+<h1>Panel de Control</h1>
+<div class="sub">Siló · Dados VIP · Guion determinista</div>
+
+<div class="botones">
+  <button class="btn-srv btn-ganar" id="btnGuionGanar">
+    GUION GANAR
+    <span class="subtext">Todas las tiradas ganan</span>
+  </button>
+  <button class="btn-srv btn-perder" id="btnGuionPerder">
+    GUION PERDER
+    <span class="subtext">Todas las tiradas pierden</span>
+  </button>
+  <button class="btn-srv btn-random" id="btnGuionRandom">
+    GUION RANDOM
+    <span class="subtext">Aleatorio puro</span>
+  </button>
+</div>
+
+<div class="panel">
+  <h2>Monitor en vivo</h2>
+  <div class="fila">
+    <span class="label">Estado servidor</span>
+    <span class="valor gris" id="estadoServidor">—</span>
+  </div>
+  <div class="fila">
+    <span class="label">Guion actual</span>
+    <span class="valor gris" id="guionActual">—</span>
+  </div>
+  <div class="fila">
+    <span class="label">Sesiones activas</span>
+    <span class="valor gris" id="sesionesActivas">0</span>
+  </div>
+  <div class="fila">
+    <span class="label">Tiradas totales</span>
+    <span class="valor gris" id="totalTiradas">0</span>
+  </div>
+  <div class="fila">
+    <span class="label">Tiradas en curso</span>
+    <span class="valor gris" id="tiradasActivas">0</span>
+  </div>
+  <div class="fila">
+    <span class="label">Incidentes</span>
+    <span class="valor gris" id="incidentes">0</span>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Progreso por sesión</h2>
+  <div class="guion" id="progresoDetalle">—</div>
+</div>
+
+<div class="panel">
+  <h2>Último incidente</h2>
+  <div class="guion" id="ultimoIncidente">—</div>
+</div>
+
+<a class="link-juego" href="/" target="_blank">→ Abrir Juego</a>
+
+<script>
+const estadoServidor = document.getElementById('estadoServidor');
+const guionActual = document.getElementById('guionActual');
+const sesionesActivas = document.getElementById('sesionesActivas');
+const totalTiradas = document.getElementById('totalTiradas');
+const tiradasActivas = document.getElementById('tiradasActivas');
+const incidentes = document.getElementById('incidentes');
+const progresoDetalle = document.getElementById('progresoDetalle');
+const ultimoIncidente = document.getElementById('ultimoIncidente');
+
+async function setGuion(modos, boton) {
+  boton.classList.remove('pulsado');
+  void boton.offsetWidth;
+  boton.classList.add('pulsado');
+  try {
+    await fetch('/api/v1/guion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ guion: modos, reset: true }),
+    });
+    await refrescar();
+  } catch (e) {
+    console.error('Error cambiando guion:', e);
+  }
+}
+
+document.getElementById('btnGuionGanar').onclick = (e) =>
+  setGuion(Array(50).fill('ganar'), e.currentTarget);
+document.getElementById('btnGuionPerder').onclick = (e) =>
+  setGuion(Array(50).fill('perder'), e.currentTarget);
+document.getElementById('btnGuionRandom').onclick = (e) =>
+  setGuion(Array(50).fill('random'), e.currentTarget);
+
+async function refrescar() {
+  try {
+    const r = await fetch('/api/estado');
+    const data = await r.json();
+
+    estadoServidor.textContent = 'CONECTADO';
+    estadoServidor.classList.remove('gris', 'rojo');
+    estadoServidor.classList.add('verde');
+
+    const guion = data.guion || [];
+    // Mostrar solo los primeros 10 modos para no saturar
+    const muestra = guion.slice(0, 10).join(' → ').toUpperCase();
+    guionActual.textContent = guion.length > 10 ? muestra + ' → …' : muestra;
+    sesionesActivas.textContent = (data.sesiones || []).length;
+    totalTiradas.textContent = data.total_tiradas || 0;
+    tiradasActivas.textContent = data.tiradas_activas || 0;
+    incidentes.textContent = data.incidentes || 0;
+    if (data.incidentes > 0) {
+      incidentes.classList.remove('gris');
+      incidentes.classList.add('rojo');
+    } else {
+      incidentes.classList.remove('rojo');
+      incidentes.classList.add('gris');
+    }
+
+    const prog = data.progreso || {};
+    const entradas = Object.entries(prog);
+    if (entradas.length === 0) {
+      progresoDetalle.textContent = 'Sin tiradas registradas aún';
+    } else {
+      progresoDetalle.innerHTML = entradas
+        .map(([sesion, paso]) => `${sesion.slice(0, 8)}… → paso ${paso}`)
+        .join('<br>');
+    }
+
+    if (data.ultimo_incidente) {
+      const i = data.ultimo_incidente;
+      ultimoIncidente.textContent = `${i.tipo} · ${i.modo} · entregados=[${i.entregados}] mostrados=[${i.mostrados}]`;
+    } else {
+      ultimoIncidente.textContent = 'Sin incidentes';
+    }
+  } catch (e) {
+    estadoServidor.textContent = 'DESCONECTADO';
+    estadoServidor.classList.remove('verde', 'gris');
+    estadoServidor.classList.add('rojo');
+  }
+}
+
+setInterval(refrescar, 800);
+refrescar();
+</script>
+</body>
+</html>
